@@ -2,12 +2,14 @@ package me.spuny.xpbottle.commands;
 
 import me.spuny.xpbottle.Main;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 
@@ -53,8 +55,10 @@ public class XpBottleCommand implements CommandExecutor {
         ItemStack xpBottle = new ItemStack(Material.EXPERIENCE_BOTTLE);
         ItemMeta meta = xpBottle.getItemMeta();
         meta.setDisplayName("§e" + xp + " exp");
+        meta.getPersistentDataContainer().set(new NamespacedKey(Main.getInstance(), "exp"), PersistentDataType.INTEGER, xp);
         ArrayList<String> lore = new ArrayList<>();
         lore.add("§eTato lahvička obsahuje " + xp + " expů");
+        lore.add("§eVytvořeno hráčem: §9" + player.getName());
         meta.setLore(lore);
         xpBottle.setItemMeta(meta);
         player.getInventory().addItem(xpBottle);
