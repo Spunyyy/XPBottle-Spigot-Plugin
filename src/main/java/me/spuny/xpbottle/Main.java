@@ -8,8 +8,12 @@ public class Main extends JavaPlugin {
 
     private static Main instance;
 
+    private XpBottleController xpBottleController;
+
     public void onEnable() {
         instance = this;
+
+        xpBottleController = new XpBottleController();
 
         this.getCommand("xpbottle").setExecutor(new XpBottleCommand());
 
@@ -22,6 +26,10 @@ public class Main extends JavaPlugin {
 
     public static Main getInstance() {
         return instance;
+    }
+
+    public XpBottleController getXpBottleController() {
+        return xpBottleController;
     }
 
 }

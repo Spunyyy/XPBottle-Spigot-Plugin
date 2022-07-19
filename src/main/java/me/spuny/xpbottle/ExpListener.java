@@ -34,6 +34,7 @@ public class ExpListener implements Listener {
             int exp = getInteger(itemMeta, "exp");
             player.giveExp(exp);
             item.setAmount(item.getAmount() - 1);
+            player.sendMessage("§2§lXP §8§l>> §aBylo ti přidáno §e" + exp + " §axp");
             e.setCancelled(true);
         }
     }

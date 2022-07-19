@@ -1,17 +1,12 @@
 package me.spuny.xpbottle.commands;
 
 import me.spuny.xpbottle.Main;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class XpBottleCommand implements CommandExecutor {
 
@@ -21,9 +16,13 @@ public class XpBottleCommand implements CommandExecutor {
         plugin = Main.getInstance();
     }
 
+    HashMap<String, Long> cooldowns = new HashMap<String, Long>();
+
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
         Player player = (Player) sender;
+
+
 
         if(args.length == 0){
             player.sendMessage("§2§lXP §8§l>> §aAktuálně máš: §e" + player.getTotalExperience() + " xp (" + player.getLevel() + " levelů)");
@@ -34,33 +33,32 @@ public class XpBottleCommand implements CommandExecutor {
             int currentXp = player.getTotalExperience();
             int xp = Integer.parseInt(args[0]);
 
-            player.setExp(0.0F);
-            player.setLevel(0);
-            player.setTotalExperience(0);
+            if(xp > currentXp){
+                player.sendMessage("§2§lXP §8§l>> §cNemáš dostatek XP");
+                return true;
+            }
 
-            player.giveExp(currentXp - xp);
+            if(xp < 100 || xp > 100000) {
+                player.sendMessage("§2§lXP §8§l>> §cXP lze vybrat od 100 do 100 000");
+                return true;
+            }
 
-            item(player, xp);
+            if(cooldowns.containsKey(player.getName())){
+                if(cooldowns.get(player.getName()) > System.currentTimeMillis()){
+                    long timeLeft = (cooldowns.get(player.getName()) - System.currentTimeMillis()) / 1000;
+                    player.sendMessage("§2§lXP §8§l>> §cPříkaz nelze znovu použít po dobu §e" + timeLeft + " §csekund");
+                    return true;
+                }
+            }
 
+            cooldowns.put(player.getName(), System.currentTimeMillis() + (5 * 1000));
 
+            plugin.getXpBottleController().editPlayerXP(player, currentXp, xp);
+            plugin.getXpBottleController().createItem(player, xp);
 
             player.sendMessage("§2§lXP §8§l>> §aAktuálně máš: §e" + player.getTotalExperience() + " xp (" + player.getLevel() + " levelů)");
             return true;
         }
-
         return true;
-    }
-
-    public void item(Player player, int xp){
-        ItemStack xpBottle = new ItemStack(Material.EXPERIENCE_BOTTLE);
-        ItemMeta meta = xpBottle.getItemMeta();
-        meta.setDisplayName("§e" + xp + " exp");
-        meta.getPersistentDataContainer().set(new NamespacedKey(Main.getInstance(), "exp"), PersistentDataType.INTEGER, xp);
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add("§eTato lahvička obsahuje " + xp + " expů");
-        lore.add("§eVytvořeno hráčem: §9" + player.getName());
-        meta.setLore(lore);
-        xpBottle.setItemMeta(meta);
-        player.getInventory().addItem(xpBottle);
     }
 }
