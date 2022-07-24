@@ -15,10 +15,12 @@ public class XpBottleController {
     private Main plugin;
 
     public XpBottleController(){
-plugin = Main.getInstance();
+        plugin = Main.getInstance();
     }
 
     public void editPlayerXP(Player player, int currentXp, int xp){
+        //TODO: currentXp získat z playera až tady
+
         player.setExp(0.0F);
         player.setLevel(0);
         player.setTotalExperience(0);
