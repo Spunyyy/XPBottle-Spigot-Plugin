@@ -39,6 +39,7 @@ public class ExpListener implements Listener {
         }
     }
 
+    // Tyto metody přesunout do nějaké ItemUtils classky
     public static Integer getInteger(ItemMeta itemMeta, String key) {
         return itemMeta.getPersistentDataContainer().get(new NamespacedKey(Main.getInstance(), key), PersistentDataType.INTEGER);
     }
