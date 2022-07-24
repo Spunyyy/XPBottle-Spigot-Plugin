@@ -22,14 +22,20 @@ public class XpBottleCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-
-
         if(args.length == 0){
             player.sendMessage("§2§lXP §8§l>> §aAktuálně máš: §e" + player.getTotalExperience() + " xp (" + player.getLevel() + " levelů)");
             return true;
         }
 
         if(args.length > 0){
+
+            try {
+                int xp = Integer.parseInt(args[0]);
+            } catch (Throwable e) {
+                player.sendMessage("§2§lXP §8§l>> §c/xpbottle <číslo>");
+                return false;
+            }
+
             int currentXp = player.getTotalExperience();
             int xp = Integer.parseInt(args[0]);
 

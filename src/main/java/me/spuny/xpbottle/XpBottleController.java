@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class XpBottleController {
@@ -26,12 +27,13 @@ plugin = Main.getInstance();
     }
 
     public void createItem(Player player, int xp){
+        DecimalFormat formatter = new DecimalFormat("###,###");
         ItemStack xpBottle = new ItemStack(Material.EXPERIENCE_BOTTLE);
         ItemMeta meta = xpBottle.getItemMeta();
-        meta.setDisplayName("§e" + xp + " exp");
+        meta.setDisplayName("§e" + formatter.format(xp) + " exp");
         meta.getPersistentDataContainer().set(new NamespacedKey(Main.getInstance(), "exp"), PersistentDataType.INTEGER, xp);
         ArrayList<String> lore = new ArrayList<>();
-        lore.add("§eTato lahvička obsahuje " + xp + " expů");
+        lore.add("§eTato lahvička obsahuje " + formatter.format(xp) + " expů");
         lore.add("§eVytvořeno hráčem: §9" + player.getName());
         meta.setLore(lore);
         xpBottle.setItemMeta(meta);
