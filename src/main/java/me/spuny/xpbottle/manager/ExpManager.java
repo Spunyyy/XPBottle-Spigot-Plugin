@@ -18,9 +18,7 @@ public class ExpManager {
 
     private Main plugin;
 
-
     HashMap<String, Long> cooldowns = new HashMap<String, Long>();
-
 
     private int limitMin;
     private int limitMax;
@@ -29,11 +27,9 @@ public class ExpManager {
     private String adminPermissions;
     private String usePermissions;
 
-
     private String itemName;
     private Material itemType;
     private List<String> itemLore;
-
 
     private String configReloadMessage;
     private String noPermMessage;
