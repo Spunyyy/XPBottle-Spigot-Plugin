@@ -1,0 +1,40 @@
+messages:
+  player:
+    # send message about current player's xp
+    currentXp: "&6&lXP &8&l>> &eYou now have %exp% xp and %level% levels"
+    # send message that player dont have enough xp
+    outOfXp: "&6&lXP &8&l>> &eYou don't have enough xp"
+    # send message about current xp limits he can withdraw
+    xpLimit: "&6&lXP &8&l>> &eYou can withdraw xp only from %limitMin% to %limitMax%"
+    # send message about time left in cooldown
+    cooldown: "&6&lXP &8&l>> &eYou can't use that command for next %timeLeft% second"
+    # send message about how much xp player recieved
+    addXp: "&6&lXP &8&l>> &eYou recieved %recievedExp% xp"
+    # send message about how to use command
+    tutorial: "&6&lXP &8&l>> &eCorrect usage: &a/xpbottle <number>"
+    # send message about reloading config
+    configReload: "&6&lXP &8&l>> &3Plugin reloaded"
+    # send message about missing permission
+    noPerm: "&6&lXP &8&l>> &cYou don't have permission"
+
+limits:
+  # minimal xp players can withdraw
+  min: 100
+  # maximal xp players can withdraw
+  max: 100000
+  # cooldown between creating new bottle (in seconds)
+  cooldownTimer: 5
+
+permissions:
+  # if you edit permissions, dont forgot edit it in permission plugin manager
+  player:
+    admin: "foresttech.xpbottle.admin"
+    use: "foresttech.xpbottle.use"
+
+# Item template
+item:
+  name: "&e%expNumber% xp"
+  type: "EXPERIENCE_BOTTLE"
+  lore:
+  - "&eThis bottle was created by %playerName%"
+  - "&eand contains %expNumber% xp"

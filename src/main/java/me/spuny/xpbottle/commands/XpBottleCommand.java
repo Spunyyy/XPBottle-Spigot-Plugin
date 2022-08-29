@@ -1,12 +1,12 @@
 package me.spuny.xpbottle.commands;
 
 import me.spuny.xpbottle.Main;
+import me.spuny.xpbottle.utils.Messages;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.HashMap;
 
 public class XpBottleCommand implements CommandExecutor {
 
@@ -16,62 +16,68 @@ public class XpBottleCommand implements CommandExecutor {
         plugin = Main.getInstance();
     }
 
-    HashMap<String, Long> cooldowns = new HashMap<String, Long>();
-
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if(!(sender instanceof Player)){
+            Bukkit.getLogger().warning("Only player can use this command!");
+            return true;
+        }
 
-        // Nejdříve checknout sender instanceof Player, jinak return
         Player player = (Player) sender;
 
-        if(args.length == 0){
-            player.sendMessage("§2§lXP §8§l>> §aAktuálně máš: §e" + player.getTotalExperience() + " xp (" + player.getLevel() + " levelů)");
+        if (!player.hasPermission(plugin.getExpManager().getUsePermissions())) {
+            Messages.sendMsg(player, plugin.getExpManager().getNoPermMessage());
             return true;
         }
 
-        // Zbytečný jelikož args.length v tento moment musí být > 0
-        if(args.length > 0){
 
-            // int xp = 0
-            try {
-                int xp = Integer.parseInt(args[0]);
-            } catch (Throwable e) {
-                // Exception místo Throwable - optional
-                player.sendMessage("§2§lXP §8§l>> §c/xpbottle <číslo>");
-                // Return true
-                return false;
-            }
-
-            int currentXp = player.getTotalExperience();
-            int xp = Integer.parseInt(args[0]);
-
-            if(xp > currentXp){
-                player.sendMessage("§2§lXP §8§l>> §cNemáš dostatek XP");
-                return true;
-            }
-
-            // Možná do configu?
-            if(xp < 100 || xp > 100000) {
-                player.sendMessage("§2§lXP §8§l>> §cXP lze vybrat od 100 do 100 000");
-                return true;
-            }
-
-            if(cooldowns.containsKey(player.getName())){
-                if(cooldowns.get(player.getName()) > System.currentTimeMillis()){
-                    long timeLeft = (cooldowns.get(player.getName()) - System.currentTimeMillis()) / 1000;
-                    player.sendMessage("§2§lXP §8§l>> §cPříkaz nelze znovu použít po dobu §e" + timeLeft + " §csekund");
-                    return true;
-                }
-            }
-
-            cooldowns.put(player.getName(), System.currentTimeMillis() + (5 * 1000));
-
-            plugin.getXpBottleController().editPlayerXP(player, currentXp, xp);
-            plugin.getXpBottleController().createItem(player, xp);
-
-            player.sendMessage("§2§lXP §8§l>> §aAktuálně máš: §e" + player.getTotalExperience() + " xp (" + player.getLevel() + " levelů)");
+        if (args.length == 0) {
+            Messages.sendMsg(player, plugin.getExpManager().getPlayerCurrentXpMessage()
+                    .replace("%exp%", String.valueOf(player.getTotalExperience()))
+                    .replace("%level%", String.valueOf(player.getLevel())));
             return true;
         }
 
+        if (args[0].equalsIgnoreCase("reload")) {
+            plugin.getXpBottleController().reloadPluginData(player);
+            return true;
+        }
+
+        if (!plugin.getXpBottleController().checkXpIsNumber(args)) {
+            Messages.sendMsg(player, plugin.getExpManager().getTutorialCmdMessage());
+            return true;
+        }
+
+        int xp = Integer.parseInt(args[0]);
+        int currentXp = player.getTotalExperience();
+
+        if (xp > currentXp) {
+            Messages.sendMsg(player, plugin.getExpManager().getOutOfXPMessage());
+            return true;
+        }
+
+        if (xp < plugin.getExpManager().getLimitMin() || xp > plugin.getExpManager().getLimitMax()) {
+            Messages.sendMsg(player, plugin.getExpManager().getXpLimitMessage()
+                    .replace("%limitMin%", String.valueOf(plugin.getExpManager().getLimitMin()))
+                    .replace("%limitMax%", String.valueOf(plugin.getExpManager().getLimitMax())));
+            return true;
+        }
+
+        if (plugin.getExpManager().getCooldowns().containsKey(player.getName().toLowerCase())) {
+            if (plugin.getExpManager().getCooldowns().get(player.getName().toLowerCase()) > System.currentTimeMillis()) {
+                long timeLeft = (plugin.getExpManager().getCooldowns().get(player.getName().toLowerCase()) - System.currentTimeMillis()) / 1000;
+                Messages.sendMsg(player, plugin.getExpManager().getCoolDownMessage().replace("%timeLeft%", String.valueOf(timeLeft)));
+                return true;
+            }
+        }
+
+        plugin.getXpBottleController().putPlayerIntoCooldown(player);
+        plugin.getXpBottleController().editPlayerXP(player, currentXp, xp);
+        plugin.getExpManager().createNewBottle(player, xp);
+
+        Messages.sendMsg(player, plugin.getExpManager().getPlayerCurrentXpMessage()
+                .replace("%exp%", String.valueOf(player.getTotalExperience()))
+                .replace("%level%", String.valueOf(player.getLevel())));
         return true;
     }
 }
