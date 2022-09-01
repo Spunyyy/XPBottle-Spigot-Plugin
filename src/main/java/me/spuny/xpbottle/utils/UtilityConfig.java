@@ -22,11 +22,6 @@ public class UtilityConfig {
         this.fileName = fileName;
     }
 
-    /**
-     * Setupne config (vytvoří file, pokud je potřeba, loadne z něj data, atd.)
-     *
-     * @param downloadFromResources Pokud soubor neexistuje, má se vložit soubor z "resources" složky (true), nebo jen vytvořit prázdný soubor? (false)
-     */
     public void setup(boolean downloadFromResources) {
         if (!Main.getInstance().getDataFolder().exists()) {
             Main.getInstance().getDataFolder().mkdir();
@@ -60,13 +55,6 @@ public class UtilityConfig {
         }
     }
 
-    /**
-     * Vrací KONFIGURACI (tedy data ze souboru). Můžete je upravovat, ale bacha!
-     * To, že je upravíte v KONFIGURACI neznamená, že je upravíte i v SOUBORU!
-     * Data pak musíte ULOŽIT pomocí metody #save() níže!
-     *
-     * @return
-     */
     public FileConfiguration get() {
         return configuration;
     }
